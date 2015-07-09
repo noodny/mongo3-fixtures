@@ -50,7 +50,7 @@ module.exports = function(options, done) {
                         }
                         db.close();
                         if(done) {
-                            done();
+                            done(err);
                         }
                     });
                 }

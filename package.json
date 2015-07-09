@@ -1,6 +1,6 @@
 {
     "name": "mongo3-fixtures",
-    "version": "0.0.3",
+    "version": "0.1.0",
     "description": "Easily load datasets into your mongo database.",
     "main": "index.js",
     "scripts": {
