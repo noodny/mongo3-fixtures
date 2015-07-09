@@ -2,8 +2,13 @@ var MongoClient = require('mongodb').MongoClient,
     async = require('async'),
     colors = require('colors');
 
-module.exports = function(url, fixtures) {
-    MongoClient.connect(url, function(err, db) {
+module.exports = function(options, done) {
+    if(!options.verbose) {
+        console.log = function() {
+        };
+    }
+
+    MongoClient.connect(options.url, function(err, db) {
         if(err) {
             console.log('\t failure'.red);
             console.log(err);
@@ -18,7 +23,7 @@ module.exports = function(url, fixtures) {
                     console.log(err);
                 } else {
                     console.log('\t success'.green);
-                    async.forEachOfSeries(fixtures, function(documents, collectionName, callback) {
+                    async.forEachOfSeries(options.fixtures, function(documents, collectionName, callback) {
                         var collection = db.collection(collectionName);
 
                         if(documents.length) {
@@ -41,6 +46,9 @@ module.exports = function(url, fixtures) {
                             console.log('Database population finished'.green);
                         }
                         db.close();
+                        if(done) {
+                            done();
+                        }
                     });
                 }
             });
