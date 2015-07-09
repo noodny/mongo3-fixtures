@@ -3,47 +3,50 @@ var MongoClient = require('mongodb').MongoClient,
     colors = require('colors');
 
 module.exports = function(options, done) {
-    if(!options.verbose) {
-        console.log = function() {
+    var log;
+    if(options.verbose) {
+        log = console.log;
+    } else {
+        log = function() {
         };
     }
 
     MongoClient.connect(options.url, function(err, db) {
         if(err) {
-            console.log('\t failure'.red);
-            console.log(err);
+            log('\t failure'.red);
+            log(err);
             db.close();
         } else {
-            console.log('\t success'.green);
+            log('\t success'.green);
 
-            console.log('database drop:');
+            log('database drop:');
             db.dropDatabase(function(err) {
                 if(err) {
-                    console.log('\t failure'.red);
-                    console.log(err);
+                    log('\t failure'.red);
+                    log(err);
                 } else {
-                    console.log('\t success'.green);
+                    log('\t success'.green);
                     async.forEachOfSeries(options.fixtures, function(documents, collectionName, callback) {
                         var collection = db.collection(collectionName);
 
                         if(documents.length) {
-                            console.log('populate collection ' + collectionName + ':');
+                            log('populate collection ' + collectionName + ':');
                             collection.insert(documents, function(err, result) {
                                 if(err) {
-                                    console.log('\t failure'.red);
-                                    console.log(err);
+                                    log('\t failure'.red);
+                                    log(err);
                                 } else {
-                                    console.log('\t success'.green + ' (' + documents.length + ' documents)');
+                                    log('\t success'.green + ' (' + documents.length + ' documents)');
                                 }
                                 callback(err);
                             });
                         }
                     }, function(err) {
                         if(err) {
-                            console.log('Database population failed:\n'.red);
-                            console.log(err);
+                            log('Database population failed:\n'.red);
+                            log(err);
                         } else {
-                            console.log('Database population finished'.green);
+                            log('Database population finished'.green);
                         }
                         db.close();
                         if(done) {
